@@ -60,7 +60,11 @@ const BridgeClient = function (type, methodName, parameters, responseCallback) {
   }
 };
 
+function GetRandom(start, end) {
+  return start + Math.ceil(Math.random() * (end - start))
+}
 
 export {
   BridgeClient,
+  GetRandom,
 };

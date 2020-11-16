@@ -8,13 +8,25 @@
   >
     <div
       class="wrap-list"
-      :style="{width:ulWith+'px',transitionDuration:transitionDuration,transform:translateX}"
+      :style="{
+        width: ulWith + 'px',
+        transitionDuration: transitionDuration,
+        transform: translateX,
+      }"
     >
       <div
         class="wrap-item"
-        v-for="(item,index) in list"
+        v-for="(item, index) in list"
         :key="index"
-        :style="{transform:index===swiperCurrent?currentScale:(index === stepNext || index === stepPrevious)?nextScale:'scaleY(0.9)',transitionDuration:transitionDuration}"
+        :style="{
+          transform:
+            index === swiperCurrent
+              ? currentScale
+              : index === stepNext || index === stepPrevious
+              ? nextScale
+              : 'scaleY(0.8)',
+          transitionDuration: transitionDuration,
+        }"
       >
         <slot name="default" :item="item"></slot>
       </div>
@@ -22,6 +34,8 @@
   </div>
 </template>
 <script>
+import { AccAdd, AccMul } from "../utils/calculate.js";
+
 export default {
   name: "component_swiper",
   props: ["list"],
@@ -29,7 +43,7 @@ export default {
     return {
       translateX: "translateX(0px)",
       transitionDuration: "0ms",
-      scaleY: "scaleY(0.9)",
+      scaleY: "scaleY(0.8)",
       swiperCurrent: 0,
       stepPrevious: -1,
       stepNext: 1,
@@ -44,9 +58,9 @@ export default {
       offsetY: 0,
       minOffset: 0,
       currentScaleNum: 1,
-      nextScaleNum: 0.9,
+      nextScaleNum: 0.8,
       currentScale: "scaleY(1)",
-      nextScale: "scaleY(0.9)",
+      nextScale: "scaleY(0.8)",
     };
   },
   watch: {
@@ -60,90 +74,25 @@ export default {
   methods: {
     init() {
       var fontSize = document.documentElement.clientWidth / 10;
-      var liWith = Math.floor(this.accMul(9.2, fontSize));
+      var liWith = Math.floor(AccMul(9.2, fontSize));
 
       this.liLength = this.list.length;
       this.htmlFontSize = fontSize;
       this.liWith = liWith;
-      this.minOffset = Math.floor(
-        this.accAdd(this.accMul(0.186, fontSize), liWith)
-      );
+      this.minOffset = Math.floor(AccAdd(AccMul(0.186, fontSize), liWith));
 
       this.resizeUlWith();
     },
     resizeUlWith: function resizeUlWith() {
-      //      var ulWith = this.accAdd(
-      //   this.accMul(this.liWith, this.liLength),
-      //   this.accMul(this.accMul(0.16, this.htmlFontSize), this.liLength-1)
+      //      var ulWith = AccAdd(
+      //   AccMul(this.liWith, this.liLength),
+      //   AccMul(AccMul(0.16, this.htmlFontSize), this.liLength-1)
       // );
-      var ulWith = this.accAdd(
-        this.accMul(this.liWith, this.liLength),
-        this.accMul(this.accMul(0.186, this.htmlFontSize), this.liLength)
+      var ulWith = AccAdd(
+        AccMul(this.liWith, this.liLength),
+        AccMul(AccMul(0.186, this.htmlFontSize), this.liLength)
       );
       this.ulWith = ulWith;
-    },
-    accMul: function accMul(arg1, arg2) {
-      var m = 0,
-        s1 = arg1.toString(),
-        s2 = arg2.toString();
-      try {
-        m += s1.split(".")[1].length;
-      } catch (e) {}
-      try {
-        m += s2.split(".")[1].length;
-      } catch (e) {}
-      return (
-        (Number(s1.replace(".", "")) * Number(s2.replace(".", ""))) /
-        Math.pow(10, m)
-      );
-    },
-    accAdd: function accAdd(arg1, arg2) {
-      var r1, r2, m, c;
-      try {
-        r1 = arg1.toString().split(".")[1].length;
-      } catch (e) {
-        r1 = 0;
-      }
-      try {
-        r2 = arg2.toString().split(".")[1].length;
-      } catch (e) {
-        r2 = 0;
-      }
-      m = Math.pow(10, Math.max(r1, r2));
-      c = Math.abs(r1 - r2);
-      if (c > 0) {
-        var cm = Math.pow(10, c);
-        if (r1 > r2) {
-          arg1 = Number(arg1.toString().replace(".", ""));
-          arg2 = Number(arg2.toString().replace(".", "")) * cm;
-        } else {
-          arg1 = Number(arg1.toString().replace(".", "")) * cm;
-          arg2 = Number(arg2.toString().replace(".", ""));
-        }
-      } else {
-        arg1 = Number(arg1.toString().replace(".", ""));
-        arg2 = Number(arg2.toString().replace(".", ""));
-      }
-      return (arg1 + arg2) / m;
-    },
-    accSub: function accSub(arg1, arg2) {
-      var r1, r2, m;
-      try {
-        r1 = arg1.toString().split(".")[1].length;
-      } catch (e) {
-        r1 = 0;
-      }
-      try {
-        r2 = arg2.toString().split(".")[1].length;
-      } catch (e) {
-        r2 = 0;
-      }
-      m = Math.pow(10, Math.max(r1, r2));
-      return (this.accMul(arg1, m) - this.accMul(arg2, m)) / m;
-    },
-    toFixed: function jsToFixed(arg1, arg2) {
-      var result = Math.round(arg1 * Math.pow(10, arg2)) / Math.pow(10, arg2);
-      return result.toFixed(arg2);
     },
     delta: function delta() {
       return this.vertical ? this.deltaY : this.deltaX;
@@ -196,15 +145,15 @@ export default {
       this.pace = this.offsetX > 0 ? (this.deltaX > 0 ? -1 : 1) : 0;
 
       if (this.isCorrectDirection()) {
-        var offset = this.accMul(
+        var offset = AccMul(
           -this.pace,
           this.range(this.offsetX, 0, this.minOffset)
         );
 
-        var scaleNum = (Math.abs(offset) / this.liWith) * 0.1;
+        var scaleNum = (Math.abs(offset) / this.liWith) * 0.2;
 
-        this.currentScaleNum = Math.max(1 - scaleNum, 0.9);
-        this.nextScaleNum = Math.min(this.accAdd(0.9, scaleNum), 1);
+        this.currentScaleNum = Math.max(1 - scaleNum, 0.8);
+        this.nextScaleNum = Math.min(AccAdd(0.8, scaleNum), 1);
 
         this.move({
           offset: offset,
@@ -214,10 +163,10 @@ export default {
     },
     touchEnd: function touchEnd(event) {
       if (this.isCorrectDirection() && this.offsetX > 0) {
-        var minOffsetNum = -this.accMul(this.pace, this.minOffset);
+        var minOffsetNum = -AccMul(this.pace, this.minOffset);
 
         this.currentScaleNum = 1;
-        this.nextScaleNum = 0.9;
+        this.nextScaleNum = 0.8;
         this.transitionDuration = "500ms";
 
         this.move({
@@ -262,16 +211,16 @@ export default {
       return Math.min(Math.max(num, min), max);
     },
     move: function move(obj) {
-      var targetOffset = this.accAdd(
+      var targetOffset = AccAdd(
         obj.offset,
-        -this.accMul(this.minOffset, this.swiperCurrent)
+        -AccMul(this.minOffset, this.swiperCurrent)
       );
       this.currentScale = "scaleY(" + this.currentScaleNum + ")";
       this.nextScale = "scaleY(" + this.nextScaleNum + ")";
       this.translateX = "translateX(" + targetOffset + "px)";
     },
     getScale(index) {
-      var str = "scaleY(0.9)";
+      var str = "scaleY(0.8)";
       if (index === this.swiperCurrent) {
         str = this.currentScale;
       } else if (index === this.stepNext || index === this.stepPrevious) {
@@ -295,7 +244,7 @@ export default {
 
 .wrap-item {
   float: left;
-  height: 330px;
+  height: 200px;
   width: 345px;
   background: #fff;
   box-shadow: 0px 2.5px 5px 0px rgba(51, 51, 51, 0.1);
