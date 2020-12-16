@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
+  publicPath: process.env.VUE_APP_PORT ? `/k12-h5-web/${process.env.VUE_APP_PORT}` : "/",
   configureWebpack: {
     plugins: [
       new webpack.ProvidePlugin({

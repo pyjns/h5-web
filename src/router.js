@@ -13,7 +13,7 @@ let routes = [
 
 let router = new Router({
   mode: 'history',
-  base: process.env.BASE_URL,
+  base: process.env.VUE_APP_PORT ? `/k12-h5-web/${process.env.VUE_APP_PORT}` : "/",
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {

@@ -6,8 +6,10 @@ echo $serviceUrl
 sysOS=`uname -s`
 if [ $sysOS == "Darwin" ];then
   sed -i '' "s|VUE_APP_API=.*|VUE_APP_API=${serviceUrl}|" .env.production;
+  sed -i '' "s|VUE_APP_PORT=.*|VUE_APP_PORT=${servicePort}|" .env.production;
   echo '设置完成'
 else
   sed -i "s|VUE_APP_API=.*|VUE_APP_API=${serviceUrl}|" .env.production;
+  sed -i "s|VUE_APP_PORT=.*|VUE_APP_PORT=${servicePort}|" .env.production;
   echo '设置完成'
 fi
