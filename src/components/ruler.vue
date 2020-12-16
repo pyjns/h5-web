@@ -77,7 +77,7 @@ export default {
         maxTranslateX: 0,
         unit: "厘米",
         list: [
-          ,
+          null,
           100,
           110,
           120,
@@ -105,7 +105,7 @@ export default {
         step: 0.1,
         unit: "公斤",
         list: [
-          ,
+          null,
           25,
           26,
           27,

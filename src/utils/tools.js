@@ -5,13 +5,13 @@
  */
 function setupWebViewJavascriptBridge(callback) {
   if (window.WebViewJavascriptBridge) {
-    return callback(WebViewJavascriptBridge);
+    return callback(window.WebViewJavascriptBridge);
   } else {
     // 兼容 android
     document.addEventListener(
       "WebViewJavascriptBridgeReady",
       function () {
-        callback(WebViewJavascriptBridge);
+        callback(window.WebViewJavascriptBridge);
       },
       false
     );
